@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+.next/
+
+# Environment files — never commit these
+.env
+.env.local
+.env.test
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+
+# Testing
+coverage/
+
+# Prisma
+prisma/*.db
