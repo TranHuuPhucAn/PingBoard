@@ -1,0 +1,11 @@
+{
+  "name": "pingboard",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter api dev",
+    "build": "pnpm --filter api build",
+    "test": "pnpm --filter api test"
+  },
+  "devDependencies": {}
+}
