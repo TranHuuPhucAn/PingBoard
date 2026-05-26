@@ -1,4 +1,7 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
+import session from 'express-session';
+import passport from './config/passport';
+import authRouter from './routes/auth';
 import monitorsRouter from './routes/monitors';
 
 const app: Application = express();
@@ -6,15 +9,19 @@ const app: Application = express();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/monitors', monitorsRouter);
+app.use(session({
+  secret: process.env.SESSION_SECRET!,
+  resave: false,
+  saveUninitialized: false,
+}));
+app.use(passport.initialize());
 
 // Routes
 app.get('/health', (_req: Request, res: Response) => {
-  res.json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-  });
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+app.use('/auth', authRouter);
+app.use('/monitors', monitorsRouter);
 
 // 404 handler
 app.use((_req: Request, res: Response) => {
