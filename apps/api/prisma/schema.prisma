@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CheckStatus {
+  UP
+  DOWN
+  PENDING
+}
+
+model User {
+  id        String   @id @default(cuid())
+  githubId  String   @unique
+  email     String?
+  name      String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+
+  monitors Monitor[]
+
+  @@map("users")
+}
+
+model Monitor {
+  id              String   @id @default(cuid())
+  userId          String
+  name            String
+  url             String
+  intervalMinutes Int      @default(5)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  checkResults CheckResult[]
+  alerts       Alert[]
+
+  @@map("monitors")
+}
+
+model CheckResult {
+  id             String      @id @default(cuid())
+  monitorId      String
+  status         CheckStatus
+  statusCode     Int?
+  responseTimeMs Int?
+  checkedAt      DateTime    @default(now())
+
+  monitor Monitor @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+  alerts  Alert[]
+
+  @@map("check_results")
+}
+
+model Alert {
+  id            String    @id @default(cuid())
+  monitorId     String
+  checkResultId String
+  resolvedAt    DateTime?
+  createdAt     DateTime  @default(now())
+
+  monitor     Monitor     @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+  checkResult CheckResult @relation(fields: [checkResultId], references: [id], onDelete: Cascade)
+
+  @@map("alerts")
+}
