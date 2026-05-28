@@ -3,6 +3,7 @@ import session from 'express-session';
 import passport from './config/passport';
 import authRouter from './routes/auth';
 import monitorsRouter from './routes/monitors';
+import alertsRouter from './routes/alerts';
 
 const app: Application = express();
 
@@ -22,6 +23,7 @@ app.get('/health', (_req: Request, res: Response) => {
 });
 app.use('/auth', authRouter);
 app.use('/monitors', monitorsRouter);
+app.use('/alerts', alertsRouter);
 
 // 404 handler
 app.use((_req: Request, res: Response) => {
