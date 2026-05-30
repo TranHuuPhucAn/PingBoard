@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
+import { redis } from '../lib/redis';
 import { authMiddleware } from '../middleware/auth';
 import { validateBody } from '../lib/validate';
 import { addMonitorJob, removeMonitorJob } from '../lib/scheduler';
@@ -33,7 +34,16 @@ router.get('/', async (req: Request, res: Response) => {
     where: { userId: req.user!.userId },
     orderBy: { createdAt: 'desc' },
   });
-  res.json(monitors);
+
+  const monitorsWithStatus = await Promise.all(
+    monitors.map(async (monitor) => {
+      const cached = await redis.get(`monitor:${monitor.id}:latest`);
+      const latestStatus = cached ? JSON.parse(cached) : null;
+      return { ...monitor, latestStatus };
+    })
+  );
+
+  res.json(monitorsWithStatus);
 });
 
 // Get a single monitor
