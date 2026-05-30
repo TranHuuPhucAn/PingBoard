@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { authMiddleware } from '../middleware/auth';
 import { validateBody } from '../lib/validate';
+import { addMonitorJob, removeMonitorJob } from '../lib/scheduler';
 import { createMonitorSchema, updateMonitorSchema } from '../schemas/monitor.schema';
 
 const router : Router= Router();
@@ -21,7 +22,7 @@ router.post('/', validateBody(createMonitorSchema), async (req: Request, res: Re
     },
   });
 
-  // TODO: addMonitorJob(monitor.id, monitor.intervalMinutes) 
+  await addMonitorJob(monitor.id, monitor.intervalMinutes);
 
   res.status(201).json(monitor);
 });
@@ -74,8 +75,10 @@ router.put('/:id', validateBody(updateMonitorSchema), async (req: Request, res: 
     data: req.body,
   });
 
-  // TODO: removeMonitorJob + addMonitorJob if intervalMinutes changed 
-
+  if (req.body.intervalMinutes && req.body.intervalMinutes !== monitor.intervalMinutes) {
+    await removeMonitorJob(req.params.id);
+    await addMonitorJob(updated.id, updated.intervalMinutes);
+  }
   res.json(updated);
 });
 
@@ -87,7 +90,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
 
   await prisma.monitor.delete({ where: { id: req.params.id } });
 
-  // TODO: removeMonitorJob(req.params.id) 
+  await removeMonitorJob(req.params.id);
 
   res.status(204).send();
 });
