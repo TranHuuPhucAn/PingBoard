@@ -4,10 +4,15 @@ import passport from './config/passport';
 import authRouter from './routes/auth';
 import monitorsRouter from './routes/monitors';
 import alertsRouter from './routes/alerts';
+import cors from 'cors';
 
 const app: Application = express();
 
 // Middleware
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
