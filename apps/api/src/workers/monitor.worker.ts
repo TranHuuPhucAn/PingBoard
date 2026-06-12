@@ -6,7 +6,7 @@ interface MonitorJobData {
   monitorId: string;
 }
 
-async function processMonitorCheck(job: Job<MonitorJobData>) {
+export async function processMonitorCheck(job: Job<MonitorJobData>) {
   const { monitorId } = job.data;
 
   const monitor = await prisma.monitor.findUnique({ where: { id: monitorId } });
