@@ -39,4 +39,4 @@ WORKDIR /app/apps/api
 
 EXPOSE 3001
 
-CMD ["bash", "-c", "pnpm exec prisma migrate deploy && node dist/index.js"]
+CMD ["bash", "-c", "./node_modules/.bin/prisma migrate deploy && node dist/index.js"]
