@@ -67,6 +67,9 @@ jobs:
           REDIS_URL: redis://localhost:6379
           JWT_SECRET: test_secret_for_ci
           NODE_ENV: test
+          GITHUB_CLIENT_ID: dummy_client_id_for_ci
+          GITHUB_CLIENT_SECRET: dummy_client_secret_for_ci
+          SESSION_SECRET: dummy_session_secret_for_ci
         run: pnpm test
 
       - name: Build TypeScript
