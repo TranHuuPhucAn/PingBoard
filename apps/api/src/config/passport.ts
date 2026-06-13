@@ -2,12 +2,15 @@ import passport from 'passport';
 import { Strategy as GitHubStrategy } from 'passport-github2';
 import { prisma } from '../lib/prisma';
 
+const callbackURL = `${process.env.API_URL}/auth/github/callback`;
+console.log('OAuth callback URL:', callbackURL);
+
 passport.use(
   new GitHubStrategy(
     {
       clientID: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-      callbackURL: '${process.env.API_URL}/auth/github/callback',
+      callbackURL: callbackURL,
     },
     async (_accessToken, _refreshToken, profile, done) => {
       try {
